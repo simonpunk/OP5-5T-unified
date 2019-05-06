@@ -2175,6 +2175,8 @@ static int dwc3_msm_suspend(struct dwc3_msm *mdwc, bool hibernation)
 		dev_dbg(mdwc->dev, "defer suspend with %d(msecs)\n",
 					mdwc->lpm_to_suspend_delay);
 		pm_wakeup_event(mdwc->dev, mdwc->lpm_to_suspend_delay);
+	} else {
+		pm_relax(mdwc->dev);
 	}
 
 	atomic_set(&dwc->in_lpm, 1);
@@ -2215,6 +2217,8 @@ static int dwc3_msm_resume(struct dwc3_msm *mdwc)
 		mutex_unlock(&mdwc->suspend_resume_mutex);
 		return 0;
 	}
+
+	pm_stay_awake(mdwc->dev);
 
 	/* Enable bus voting */
 	if (mdwc->bus_perf_client) {
@@ -3412,6 +3416,37 @@ static int dwc3_msm_remove(struct platform_device *pdev)
 	return 0;
 }
 
+static bool dwc3_device_has_audio_interface(struct usb_device *udev,
+											struct dwc3_msm *mdwc)
+{
+	struct usb_host_config *conf;
+	int num_configs = udev->descriptor.bNumConfigurations;
+	int i, j, k;
+	struct usb_interface *intf;
+	struct usb_host_interface *altsetting;
+	for (i = 0, conf = udev->config; i < num_configs && conf;
+		(i++, conf++)) {
+		for (j = 0; j < USB_MAXINTERFACES; j++) {
+			intf = conf->interface[j];
+			if (!intf)
+				break;
+			for (k = 0, altsetting = intf->altsetting;
+				k < intf->num_altsetting && altsetting;
+				k++, altsetting++) {
+				if (altsetting->desc.bInterfaceClass
+					== USB_CLASS_AUDIO) {
+					dev_info(&udev->dev,
+						"Audio interface found");
+					pm_stay_awake(mdwc->dev);
+					return true;
+				}
+			}
+		}
+	}
+	pm_relax(mdwc->dev);
+	return false;
+}
+
 static int dwc3_msm_host_notifier(struct notifier_block *nb,
 	unsigned long event, void *ptr)
 {
@@ -3429,6 +3464,8 @@ static int dwc3_msm_host_notifier(struct notifier_block *nb,
 		if (!mdwc->usb_psy)
 			return NOTIFY_DONE;
 	}
+
+	dwc3_device_has_audio_interface(udev, mdwc);
 
 	/*
 	 * For direct-attach devices, new udev is direct child of root hub
