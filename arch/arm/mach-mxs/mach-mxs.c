@@ -282,7 +282,7 @@ static void __init apx4devkit_init(void)
 #define TX28_FEC_PHY_RESET	MXS_GPIO_NR(4, 13)
 #define TX28_FEC_nINT		MXS_GPIO_NR(4, 5)
 
-static const struct gpio const tx28_gpios[] __initconst = {
+static const struct gpio tx28_gpios[] __initconst = {
 	{ ENET0_MDC__GPIO_4_0, GPIOF_OUT_INIT_LOW, "GPIO_4_0" },
 	{ ENET0_MDIO__GPIO_4_1, GPIOF_OUT_INIT_LOW, "GPIO_4_1" },
 	{ ENET0_RX_EN__GPIO_4_2, GPIOF_OUT_INIT_LOW, "GPIO_4_2" },

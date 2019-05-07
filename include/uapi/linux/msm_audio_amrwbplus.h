@@ -15,4 +15,5 @@ struct msm_audio_amrwbplus_config_v2 {
 	unsigned int amr_frame_fmt;
 	unsigned int amr_lsf_idx;
 };
+
 #endif /* _UAPI_MSM_AUDIO_AMR_WB_PLUS_H */

@@ -88,10 +88,11 @@ static void dash_uart_tx_bit(
 		if (tx_data & (1 << tx_bit))
 			dash_uart_gpio_set_value(
 			chip, chip->uart_tx_gpio, 1);
-		else
+		else {
 			dash_uart_gpio_set_value(
 			chip, chip->uart_tx_gpio, 0);
 			tx_bit++;
+		}
 		break;
 	case BIT_STOP:
 	case BIT_IDLE:

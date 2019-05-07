@@ -19,7 +19,7 @@
 #include "generic.h"
 
 #ifdef CONFIG_PXA3xx
-static const struct of_dev_auxdata const pxa3xx_auxdata_lookup[] __initconst = {
+static const struct of_dev_auxdata pxa3xx_auxdata_lookup[] __initconst = {
 	OF_DEV_AUXDATA("mrvl,pxa-uart",		0x40100000, "pxa2xx-uart.0", NULL),
 	OF_DEV_AUXDATA("mrvl,pxa-uart",		0x40200000, "pxa2xx-uart.1", NULL),
 	OF_DEV_AUXDATA("mrvl,pxa-uart",		0x40700000, "pxa2xx-uart.2", NULL),
